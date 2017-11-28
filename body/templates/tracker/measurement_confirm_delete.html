@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm delete{% endblock title %}
+
+{% block content %}
+
+Are you sure you want to delete?
+
+<form action="" method="post">
+  {% csrf_token %}
+  <input type="submit" />
+</form>
+
+{% endblock content %}
