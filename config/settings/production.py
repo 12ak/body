@@ -91,13 +91,13 @@ MEDIA_URL = 'https://s3.amazonaws.com/%s/media/' % AWS_STORAGE_BUCKET_NAME
 # Static Assets
 # ------------------------
 
-STATIC_URL = 'https://s3.amazonaws.com/%s/static/' % AWS_STORAGE_BUCKET_NAME
-STATICFILES_STORAGE = 'config.settings.production.StaticRootS3BotoStorage'
+##STATIC_URL = 'https://s3.amazonaws.com/%s/static/' % AWS_STORAGE_BUCKET_NAME
+##STATICFILES_STORAGE = 'config.settings.production.StaticRootS3BotoStorage'
 # See: https://github.com/antonagestam/collectfast
 # For Django 1.7+, 'collectfast' should come before
 # 'django.contrib.staticfiles'
-AWS_PRELOAD_METADATA = True
-INSTALLED_APPS = ['collectfast', ] + INSTALLED_APPS
+##AWS_PRELOAD_METADATA = True
+##INSTALLED_APPS = ['collectfast', ] + INSTALLED_APPS
 
 # EMAIL
 # ------------------------------------------------------------------------------
