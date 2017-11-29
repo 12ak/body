@@ -1,7 +1,7 @@
 
 # PostgreSQL
-POSTGRES_PASSWORD=mysecretpass
-POSTGRES_USER=postgresuser
+POSTGRES_PASSWORD=ac6f9e526d58c7654223e7fddaafd55a5c562c52fa84571a4174f4fb374a0c13
+POSTGRES_USER=rdaaxoalphjtvk
 CONN_MAX_AGE=
 
 # Domain name, used by caddy
