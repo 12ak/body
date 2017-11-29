@@ -21,7 +21,7 @@ DJANGO_ALLOWED_HOSTS=.n.a.
 
 # Used with email
 EMAIL_HOST=smtp.mailgun.org
-DJANGO_MAILGUN_API_KEY=key-a62f803cc844c7b83a46448f1f9abef1
+DJANGO_MAILGUN_API_KEY="key-a62f803cc844c7b83a46448f1f9abef1"
 DJANGO_SERVER_EMAIL=postmaster@peaceful-anchorage-61523.herokuapp.com
 MAILGUN_SENDER_DOMAIN=peaceful-anchorage-61523.herokuapp.com
 
