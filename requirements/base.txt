@@ -49,3 +49,4 @@ redis>=2.10.5
 
 # Your custom requirements go here
 rules==1.2.1
+whitenoise==3.3.1
