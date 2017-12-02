@@ -58,6 +58,8 @@ LOCAL_APPS = [
     # Your stuff: custom apps go here
     'body.tracker.apps.TrackerConfig',
     'rules.apps.AutodiscoverRulesConfig',
+    'sitetree',
+    'chartjs',
 ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

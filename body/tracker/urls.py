@@ -38,4 +38,10 @@ urlpatterns = [
         views.MeasurementDeleteView.as_view(),
         name='delete'
     ),
+
+    url(
+        r'^json/',
+        views.MeasurementDataView.as_view(),
+        name='json'
+    ),
 ]

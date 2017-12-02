@@ -102,7 +102,7 @@ INSTALLED_APPS += ['storages', ]
 # EMAIL
 # ------------------------------------------------------------------------------
 DEFAULT_FROM_EMAIL = env('DJANGO_DEFAULT_FROM_EMAIL',
-                         default='Body <noreply@peaceful-anchorage-61523.herokuapp.com>')
+                         default='Body <noreply@body.lukeblackman.com>')
 EMAIL_SUBJECT_PREFIX = env('DJANGO_EMAIL_SUBJECT_PREFIX', default='[Body]')
 SERVER_EMAIL = env('DJANGO_SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)
 

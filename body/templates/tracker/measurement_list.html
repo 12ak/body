@@ -10,14 +10,16 @@
         <th>Abdomen</th>
         <th>Thigh</th>
         <th>Total</th>
+        <th>Weight</th>
       </tr>
       {% for measurement in measurements %}
       <tr>
-        <td><a href="/tracker/{{ measurement.id }}/">{{ measurement.created }}</a></li>
+        <td><a href="{% url 'tracker:detail' measurement.id %}">{{ measurement.created }}</a></li>
         <td>{{ measurement.chest }}</td>
         <td>{{ measurement.abdomen }}</td>
         <td>{{ measurement.thigh }}</td>
         <td>{{ measurement.get_total_measurement }}</td>
+        <td>{{ measurement.weight }}</td>
       </tr>
       {% endfor %}
     </table>
@@ -25,4 +27,24 @@
     <p>No measurements available.</p>
   {% endif %}
 
-{% endblock %}
+  <canvas id="myChart" width="400" height="400"></canvas>
+
+{% endblock content %}
+
+{% block javascript %}
+
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+
+  <script type="text/javascript">
+  $.getJSON('{% url 'tracker:json' %}', function(data) {
+    var ctx = document.getElementById('myChart');
+    var myChart = new Chart(ctx, {
+      type: 'line',
+      data: data
+    });
+  });
+  </script>
+
+{% endblock javascript %}
