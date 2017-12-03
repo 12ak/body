@@ -6,6 +6,9 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 ####TEST
 import pdb
+from datetime import datetime
+from django_pandas.io import read_frame
+import pandas as pd
 import simplejson as json
 from django.http import HttpResponse
 from django.views.generic import TemplateView
@@ -19,7 +22,6 @@ class MeasurementListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         qset =  Measurement.objects.filter(owner=self.request.user)
         qset = qset.extra(order_by = ['-created'])
-        pdb.set_trace()
         return qset
 
 class MeasurementDetailView(PermissionRequiredMixin, DetailView):
@@ -47,9 +49,19 @@ class MeasurementDeleteView(PermissionRequiredMixin, DeleteView):
 class MeasurementDataView(LoginRequiredMixin, TemplateView):
     def render_to_response(self, context):
         qset = Measurement.objects.filter(owner=self.request.user)
-        fields = ['chest', 'abdomen', 'thigh', 'weight']
+        fields = ['chest', 'abdomen', 'thigh', 'weight', 'created']
+        df = read_frame(qset, fieldnames=fields)
+        fields.pop()
+        df['created'] = df['created'].apply(lambda x: x.strftime('%Y-%b-%d'))
+        df = df.drop_duplicates(subset='created') # TODO filter by age
+        df = df.set_index('created')
+        y = pd.DataFrame(self.get_date_range(), columns=['created'])
+        y = y.set_index('created')
+        df = pd.concat([y, df], axis=1)
+        df = df.fillna("null")
+
         obj = {}
-        obj['labels'] = ["X", "Y", "Z"]
+        obj['labels'] = df.index.tolist()
         obj['datasets'] = []
 
         for field in fields:
@@ -57,10 +69,17 @@ class MeasurementDataView(LoginRequiredMixin, TemplateView):
                 {'label': field, 'data': []}
             )
 
-        for measurement in qset:
-            for field in obj['datasets']:
-                field['data'].append(
-                    getattr(measurement, field['label'])
-                )
+        for field in obj['datasets']:
+            field['data'] = df[field['label']].tolist()
 
-        return HttpResponse(json.dumps(obj))
+        return HttpResponse(json.dumps(obj),
+                            content_type='application/json')
+
+    def get_date_range(self):
+        dr = pd.date_range(
+                datetime(2017, 11, 1, 0, 0, 0),
+                datetime(2017, 11, 30, 0, 0, 0),
+                freq='D'
+            )
+        dr = dr.strftime('%Y-%b-%d').tolist()
+        return dr
