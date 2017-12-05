@@ -39,7 +39,7 @@
 
   <script type="text/javascript">
     $.getJSON('{% url 'tracker:json' %}', function(data) {
-      var ctx = document.getElementById('myChart');
+      var ctx = document.getElementById('myChart'); // TODO specify which chart canvas and create dynamically
       var myChart = new Chart(ctx, {
         type: 'line',
         data: data
