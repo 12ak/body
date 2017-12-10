@@ -4,23 +4,18 @@ from django.shortcuts import render
 from rules.contrib.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-####TEST
-import pdb
-from datetime import datetime, timedelta
 from django_pandas.io import read_frame
-import pandas as pd
-import simplejson as json
-from django.http import HttpResponse
-from django.views.generic import TemplateView
-
+from datetime import datetime, timedelta
+from chartjs.views.lines import BaseLineChartView
 from .models import Measurement
+import pandas as pd
 
 class MeasurementListView(LoginRequiredMixin, ListView):
     model = Measurement
     context_object_name = "measurements"
 
     def get_queryset(self):
-        qset =  Measurement.objects.filter(owner=self.request.user)
+        qset = Measurement.objects.filter(owner=self.request.user)
         qset = qset.extra(order_by = ['-created'])
         return qset
 
@@ -46,48 +41,32 @@ class MeasurementDeleteView(PermissionRequiredMixin, DeleteView):
     model = Measurement
     success_url = reverse_lazy('tracker:list')
 
-class MeasurementDataView(LoginRequiredMixin, TemplateView):
-    def render_to_response(self, context):
+class MeasurementDataView(LoginRequiredMixin, BaseLineChartView):
+    fields = ['chest', 'abdomen', 'thigh', 'weight']
+    obj = {}
+
+    def get_context_data(self):
+        self.prepare_data()
+        return super(MeasurementDataView, self).get_context_data()
+
+    def get_queryset(self):
         qset = Measurement.objects.filter(owner=self.request.user)
-        fields = ['chest', 'abdomen', 'thigh', 'weight']
-        df = read_frame(
-                qset,
-                fieldnames=fields + ['created']
-            )
+        return qset
 
-        labels_x = pd.DataFrame(
-                self.get_date_labels(
-                    datetime.now() - timedelta(weeks=4),
-                    datetime.now(),
-                    freq='D'
-                ),
-                columns=['created']
-            )
+    def get_labels(self):
+        return self.obj['labels']
 
-        df = df.drop_duplicates(subset='created', keep='last')
+    def get_providers(self):
+        fields = []
+        for dataset in self.obj['datasets']:
+            fields.append(dataset['label'])
+        return fields
 
-        df['created'] = df['created'].apply(
-                lambda x: x.strftime('%Y-%b-%d')
-            )
-
-        df = labels_x.merge(df, on='created', how='left')
-        df = df.set_index('created')
-        df = df.fillna("null")
-
-        obj = {}
-        obj['labels'] = df.index.tolist()
-        obj['datasets'] = []
-
-        for field in fields:
-            obj['datasets'].append(
-                {'label': field, 'data': []}
-            )
-
-        for field in obj['datasets']:
-            field['data'] = df[field['label']].tolist()
-
-        return HttpResponse(json.dumps(obj),
-                            content_type='application/json')
+    def get_data(self):
+        data = []
+        for field in self.obj['datasets']:
+            data.append(field['data'])
+        return data
 
     def get_date_labels(self, start_date, end_date, freq):
         date_labels = pd.date_range(
@@ -97,3 +76,61 @@ class MeasurementDataView(LoginRequiredMixin, TemplateView):
             )
         date_labels = date_labels.strftime('%Y-%b-%d').tolist()
         return date_labels
+
+    def get_dataframe(self, labels_x=None):
+        qset = self.get_queryset()
+
+        df = read_frame(
+                qset,
+                fieldnames=self.fields + ['created']
+            )
+
+        calculated_measurements = {}
+        for measurement in qset:
+            calculations = measurement.get_calculations()
+            for calculation_key in calculations.keys():
+                calculated_measurements.setdefault(calculation_key, []).append(
+                        calculations[calculation_key]
+                    )
+
+        for calculation_key in calculated_measurements.keys():
+            df[calculation_key] = pd.Series(
+                    calculated_measurements[calculation_key],
+                    index=df.index
+                )
+
+        df = df.drop_duplicates(subset='created', keep='last')
+        df['created'] = df['created'].apply(
+                lambda x: x.strftime('%Y-%b-%d')
+            )
+
+        if labels_x is not None:
+            df = labels_x.merge(df, on='created', how='left')
+
+        df = df.set_index('created')
+        df = df.fillna("null")
+        return df
+
+    def prepare_data(self):
+        labels_x = pd.DataFrame(
+                self.get_date_labels(
+                    datetime.now() - timedelta(weeks=4),
+                    # TODO specify look back period dynamically
+                    datetime.now(),
+                    freq='D'
+                ),
+                columns=['created']
+            )
+
+        df = self.get_dataframe(labels_x)
+
+        self.obj['labels'] = df.index.tolist()
+        self.obj['datasets'] = []
+
+        for field in list(df):
+            self.obj['datasets'].append(
+                {'label': field, 'data': []}
+            )
+
+        for field in self.obj['datasets']:
+            field['data'] = df[field['label']].tolist()

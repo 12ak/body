@@ -18,29 +18,30 @@ urlpatterns = [
         name='detail'
     ),
 
-    #e.g. /tracker/new/
+    # e.g. /tracker/new/
     url(
-        r'^new/',
+        r'^new/$',
         views.MeasurementCreateView.as_view(),
         name='new'
     ),
 
-    #e.g. /tracker/5/update
+    # e.g. /tracker/5/update/
     url(
         r'^(?P<pk>[0-9]+)/update/$',
         views.MeasurementUpdateView.as_view(),
         name='update'
     ),
 
-    #e.g. /tracker/5/delete
+    # e.g. /tracker/5/delete/
     url(
         r'^(?P<pk>[0-9]+)/delete/$',
         views.MeasurementDeleteView.as_view(),
         name='delete'
     ),
 
+    # e.g. /tracker/json/
     url(
-        r'^json/',
+        r'^json/$',
         views.MeasurementDataView.as_view(),
         name='json'
     ),

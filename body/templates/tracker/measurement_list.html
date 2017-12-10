@@ -3,6 +3,8 @@
 {% block content %}
 
   {% if object_list %}
+    <div id="charts"></div>
+
     <table>
       <tr>
         <th>Date</th>
@@ -10,7 +12,7 @@
         <th>Abdomen</th>
         <th>Thigh</th>
         <th>Total</th>
-        <th>Weight</th>
+        <th>Body Fat Percentage</th>
       </tr>
       {% for measurement in measurements %}
       <tr>
@@ -18,16 +20,15 @@
         <td>{{ measurement.chest }}</td>
         <td>{{ measurement.abdomen }}</td>
         <td>{{ measurement.thigh }}</td>
-        <td>{{ measurement.get_total_measurement }}</td>
+        <td>{{ measurement.get_calculations.total_measurement }}</td>
         <td>{{ measurement.weight }}</td>
+        <td>{{ measurement.get_calculations.body_fat_percentage }}</td>
       </tr>
       {% endfor %}
     </table>
   {% else %}
     <p>No measurements available.</p>
   {% endif %}
-
-  <canvas id="myChart" width="400" height="400"></canvas>
 
 {% endblock content %}
 
@@ -39,11 +40,20 @@
 
   <script type="text/javascript">
     $.getJSON('{% url 'tracker:json' %}', function(data) {
-      var ctx = document.getElementById('myChart');
-      var myChart = new Chart(ctx, {
-        type: 'line',
-        data: data
-      });
+      for (i=0; i < data['datasets'].length; i++) {
+        $('<canvas>').attr({
+          id: 'chart-' + i
+        }).css({
+          width: 400,
+          height: 100
+        }).appendTo('#charts');
+
+        var ctx = document.getElementById('chart-' + i);
+        var chart = new Chart(ctx, {
+          type: 'line',
+          data: { "labels": data['labels'], "datasets": [data['datasets'][i]]}
+        });
+      }
     }).fail(function(jqXHR, textStatus, errorThrown) {
         console.log("error " + textStatus);
         console.log("incoming Text " + jqXHR.responseText);
