@@ -37,13 +37,11 @@ class Measurement(TimeStampedModel):
         body_fat_percentage = ((4.95 / bone_density) - 4.5) * 100
         fat_kg = weight * body_fat_percentage / 100
         muscle_kg = weight - fat_kg
-        ffmi = (muscle_kg / (height * height)) + (6.1 * (1.8 - height))
 
         calculations = {
                 'body_fat_percentage': body_fat_percentage,
                 'muscle_kg': muscle_kg,
                 'fat_kg': fat_kg,
-                'ffmi': ffmi,
                 'total_measurement': total_measurement
             }
 

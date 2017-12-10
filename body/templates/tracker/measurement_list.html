@@ -2,16 +2,9 @@
 
 {% block content %}
 
-  <canvas id="myChart1" width="400" height="100"></canvas>
-  <canvas id="myChart2" width="400" height="100"></canvas>
-  <canvas id="myChart3" width="400" height="100"></canvas>
-  <canvas id="myChart4" width="400" height="100"></canvas>
-  <canvas id="myChart5" width="400" height="100"></canvas>
-  <canvas id="myChart6" width="400" height="100"></canvas>
-  <canvas id="myChart7" width="400" height="100"></canvas>
-  <canvas id="myChart8" width="400" height="100"></canvas>
-
   {% if object_list %}
+    <div id="charts"></div>
+
     <table>
       <tr>
         <th>Date</th>
@@ -27,9 +20,9 @@
         <td>{{ measurement.chest }}</td>
         <td>{{ measurement.abdomen }}</td>
         <td>{{ measurement.thigh }}</td>
-        <td>{{ measurement.get_total_measurement }}</td>
+        <td>{{ measurement.get_calculations.total_measurement }}</td>
         <td>{{ measurement.weight }}</td>
-        <td>{{ measurement.get_body_fat_percentage }}</td>
+        <td>{{ measurement.get_calculations.body_fat_percentage }}</td>
       </tr>
       {% endfor %}
     </table>
@@ -46,48 +39,21 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 
   <script type="text/javascript">
-    // TODO specify which chart canvas and create dynamically
-    var ctx1 = document.getElementById('myChart1');
-    var ctx2 = document.getElementById('myChart2');
-    var ctx3 = document.getElementById('myChart3');
-    var ctx4 = document.getElementById('myChart4');
-    var ctx5 = document.getElementById('myChart5');
-    var ctx6 = document.getElementById('myChart6');
-    var ctx7 = document.getElementById('myChart7');
-    var ctx8 = document.getElementById('myChart8');
     $.getJSON('{% url 'tracker:json' %}', function(data) {
-      var myChart = new Chart(ctx1, {
-        type: 'line',
-        data: { "labels": data['labels'], "datasets": [data['datasets'][0]]}
-      });
-      var myChart = new Chart(ctx2, {
-        type: 'line',
-        data: { "labels": data['labels'], "datasets": [data['datasets'][1]]}
-      });
-      var myChart = new Chart(ctx3, {
-        type: 'line',
-        data: { "labels": data['labels'], "datasets": [data['datasets'][2]]}
-      });
-      var myChart = new Chart(ctx4, {
-        type: 'line',
-        data: { "labels": data['labels'], "datasets": [data['datasets'][3]]}
-      });
-      var myChart = new Chart(ctx5, {
-        type: 'line',
-        data: { "labels": data['labels'], "datasets": [data['datasets'][4]]}
-      });
-      var myChart = new Chart(ctx6, {
-        type: 'line',
-        data: { "labels": data['labels'], "datasets": [data['datasets'][5]]}
-      });
-      var myChart = new Chart(ctx7, {
-        type: 'line',
-        data: { "labels": data['labels'], "datasets": [data['datasets'][6]]}
-      });
-      var myChart = new Chart(ctx8, {
-        type: 'line',
-        data: { "labels": data['labels'], "datasets": [data['datasets'][7]]}
-      });
+      for (i=0; i < data['datasets'].length; i++) {
+        $('<canvas>').attr({
+          id: 'chart-' + i
+        }).css({
+          width: 400,
+          height: 100
+        }).appendTo('#charts');
+
+        var ctx = document.getElementById('chart-' + i);
+        var chart = new Chart(ctx, {
+          type: 'line',
+          data: { "labels": data['labels'], "datasets": [data['datasets'][i]]}
+        });
+      }
     }).fail(function(jqXHR, textStatus, errorThrown) {
         console.log("error " + textStatus);
         console.log("incoming Text " + jqXHR.responseText);
