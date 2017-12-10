@@ -4,8 +4,8 @@ from django.shortcuts import render
 from rules.contrib.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from datetime import datetime, timedelta
 from django_pandas.io import read_frame
+from datetime import datetime, timedelta
 from chartjs.views.lines import BaseLineChartView
 from .models import Measurement
 import pandas as pd
@@ -15,7 +15,7 @@ class MeasurementListView(LoginRequiredMixin, ListView):
     context_object_name = "measurements"
 
     def get_queryset(self):
-        qset =  Measurement.objects.filter(owner=self.request.user)
+        qset = Measurement.objects.filter(owner=self.request.user)
         qset = qset.extra(order_by = ['-created'])
         return qset
 
@@ -78,10 +78,26 @@ class MeasurementDataView(LoginRequiredMixin, BaseLineChartView):
         return date_labels
 
     def get_dataframe(self, labels_x=None):
+        qset = self.get_queryset()
+
         df = read_frame(
-                self.get_queryset(),
-                fieldnames=self.fields + ['created'] # TODO specify which fields to retrieve dynamically
+                qset,
+                fieldnames=self.fields + ['created']
             )
+
+        calculated_measurements = {}
+        for measurement in qset:
+            calculations = measurement.get_calculations()
+            for calculation_key in calculations.keys():
+                calculated_measurements.setdefault(calculation_key, []).append(
+                        calculations[calculation_key]
+                    )
+
+        for calculation_key in calculated_measurements.keys():
+            df[calculation_key] = pd.Series(
+                    calculated_measurements[calculation_key],
+                    index=df.index
+                )
 
         df = df.drop_duplicates(subset='created', keep='last')
         df['created'] = df['created'].apply(
@@ -98,7 +114,8 @@ class MeasurementDataView(LoginRequiredMixin, BaseLineChartView):
     def prepare_data(self):
         labels_x = pd.DataFrame(
                 self.get_date_labels(
-                    datetime.now() - timedelta(weeks=4), # TODO specify look back period dynamically
+                    datetime.now() - timedelta(weeks=4),
+                    # TODO specify look back period dynamically
                     datetime.now(),
                     freq='D'
                 ),
@@ -110,7 +127,7 @@ class MeasurementDataView(LoginRequiredMixin, BaseLineChartView):
         self.obj['labels'] = df.index.tolist()
         self.obj['datasets'] = []
 
-        for field in self.fields:
+        for field in list(df):
             self.obj['datasets'].append(
                 {'label': field, 'data': []}
             )
