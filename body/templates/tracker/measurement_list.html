@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block content %}
 
   {% if object_list %}
@@ -56,7 +58,7 @@
       }
     }).fail(function(jqXHR, textStatus, errorThrown) {
         console.log("error " + textStatus);
-        console.log("incoming Text " + jqXHR.responseText);
+        console.log("incoming text " + jqXHR.responseText);
     });
   </script>
 
