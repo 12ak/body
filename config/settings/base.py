@@ -8,14 +8,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
 import environ
-import os
+# import os
 
 ROOT_DIR = environ.Path(__file__) - 3  # (body/config/settings/base.py - 3 = body/)
 APPS_DIR = ROOT_DIR.path('body')
 
-PROJECT_APP_PATH = os.path.dirname(os.path.abspath(__file__))
-PROJECT_APP = os.path.basename(PROJECT_APP_PATH)
-PROJECT_ROOT = BASE_DIR = os.path.dirname(PROJECT_APP_PATH)
+# PROJECT_APP_PATH = os.path.dirname(os.path.abspath(__file__))
+# PROJECT_APP = os.path.basename(PROJECT_APP_PATH)
+# PROJECT_ROOT = BASE_DIR = os.path.dirname(PROJECT_APP_PATH)
 
 
 # Load operating system environment variables and then prepare to use them
@@ -67,7 +67,7 @@ LOCAL_APPS = [
     'sitetree',
     'chartjs',
     'whitenoise.runserver_nostatic',
-    'django.contrib.staticfiles',
+    # 'django.contrib.staticfiles',
 ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -194,16 +194,16 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # STATIC FILE CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
-# STATIC_ROOT = str(ROOT_DIR('staticfiles'))
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+STATIC_ROOT = str(ROOT_DIR('staticfiles'))
+# STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = '/static/'
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [
-    # str(APPS_DIR.path('static')),
-    os.path.join(PROJECT_ROOT, 'static'),
+    str(APPS_DIR.path('static')),
+    # os.path.join(PROJECT_ROOT, 'static'),
 ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
