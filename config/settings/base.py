@@ -61,7 +61,7 @@ LOCAL_APPS = [
     'sitetree',
     'chartjs',
     'whitenoise.runserver_nostatic',
-    # 'django.contrib.staticfiles',
+    'django.contrib.staticfiles',
 ]
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
