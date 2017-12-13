@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^tracker/', include('tracker.urls')),
     # url('^login/$', auth_views.LoginView.as_view(redirect_authenticated_user=False)),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
