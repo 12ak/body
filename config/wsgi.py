@@ -17,6 +17,7 @@ import os
 import sys
 
 from django.core.wsgi import get_wsgi_application
+from whitenoise.django import DjangoWhiteNoise
 
 # This allows easy placement of apps within the interior
 # body directory.
