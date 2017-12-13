@@ -97,8 +97,8 @@ INSTALLED_APPS += ['storages', ]
 # For Django 1.7+, 'collectfast' should come before
 # 'django.contrib.staticfiles'
 ## AWS_PRELOAD_METADATA = True
-## INSTALLED_APPS = ['collectfast', ] + INSTALLED_APPS
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+INSTALLED_APPS = ['collectfast', ] + INSTALLED_APPS
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # EMAIL
 # ------------------------------------------------------------------------------
