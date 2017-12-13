@@ -66,7 +66,7 @@ LOCAL_APPS = [
     'rules.apps.AutodiscoverRulesConfig',
     'sitetree',
     'chartjs',
-    'whitenoise.runserver_nostatic',
+    # 'whitenoise.runserver_nostatic',
     # 'django.contrib.staticfiles',
 ]
 
