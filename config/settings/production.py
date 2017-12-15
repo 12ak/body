@@ -103,7 +103,8 @@ INSTALLED_APPS += ['gunicorn', ]
 ## AWS_PRELOAD_METADATA = True
 # INSTALLED_APPS = ['collectfast', ] + INSTALLED_APPS
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # EMAIL
 # ------------------------------------------------------------------------------
